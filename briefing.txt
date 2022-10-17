@@ -1,0 +1,70 @@
+Informações referentes ao planejamento inicial do projeto.
+
+Funcionalidades desejadas:
+— CRM:
+    -- Cadastro de clientes:
+        'Nome completo',
+        'Data de nascimento',
+        'CPF' (validação),
+        'Endereço' (Integração Correios),
+        'Telefone' (validação),
+        'E-mail' (validação),
+        'Redes sociais',
+        'Nível de permissão' (Vendedor, Compras, Completa, Cliente[padrão], Gestor)
+
+
+    -- Históricos e analíticos:
+        Compras por mês,
+        Compras por ano,
+        Compras por dia,
+        Ranking de clientes,
+        Paretto,
+        Última compra,
+        Clientes por região,
+
+
+
+— ERP:
+    -- Controle de estoque:
+        'Sugestão de compras',
+        'Histórico de custos',
+        'Total de estoque',
+        'Giro médio',
+        'Curva ABC',
+
+
+    -- Cadastro de produtos:
+        'Nome',
+        'Descrição',
+        'Quantidade',
+        'Custo',
+        'Código de barras',
+        'Validade',
+        'Impostos'?,
+        'Categoria',
+        'Tipo',
+        'Fabricante',
+
+
+    -- Cadastro de serviço:
+        'Nome',
+        'Descrição',
+        'Valor',
+        'Categoria',
+        'Tipo',
+
+
+    -- Vendas:
+        'Produtos',
+        'Quatidades',
+        'Valores(unitário, multiplo, total)',
+        'Cliente',
+        'Vendedor',
+
+
+
+— Integração com Google:
+    -- Banco de dados:
+    -- Sheets:
+    -- Docs:
+    Outros...
