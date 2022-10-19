@@ -40,8 +40,8 @@ Funcionalidades desejadas:
         'Custo',
         'Código de barras',
         'Validade',
-        'Impostos'?,
         'Categoria',
+        'Impostos'?,
         'Tipo',
         'Fabricante',
 

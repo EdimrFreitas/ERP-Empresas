@@ -1,12 +1,28 @@
-
-from json import load
+from os.path import abspath
+from json import dump, load
 
 
 class Configs:
+    configs_path = abspath('./Configs/configs.json')
+
     def inicia_configs(self):
-        with open('./Configs/configs.json', 'r') as configs_json:
-            self.configs = load(configs_json)
+        with open(self.configs_path, 'r') as configs_json:
+            self.configs: dict = load(configs_json)
             configs_json.close()
+
+    def salvar_config(self, param, value):
+        with open(self.configs_path, 'r+') as configs_json:
+            self.configs[param] = value
+            dump(self.configs, configs_json, indent = 2)
+            configs_json.close()
+
+    @property
+    def ip_servidor(self):
+        return self.configs['ip_servidor']
+
+    @property
+    def ultimo_user(self):
+        return self.configs['ultimo_user']
 
     @property
     def nome_da_empresa(self):
