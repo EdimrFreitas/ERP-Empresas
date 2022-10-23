@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
-from tkinter import Tk, Frame, Label, Entry, OptionMenu, Button, StringVar
-from tkinter.ttk import Treeview
-from tkcalendar import DateEntry
+from tkinter import Tk, Frame, Label, Entry, Text, OptionMenu, Button, StringVar
+from tkinter.ttk import Treeview, Combobox
+from tkcalendar import DateEntry, Calendar
 from datetime import date
 
 from configs import Configs
@@ -78,7 +78,7 @@ class CadastroClientes(Configs):
         linha3 = linha2 + multiplo_linha
         linha4 = linha3 + multiplo_linha
 
-        multiplo_coluna = 0.175
+        multiplo_coluna = 0.17
         coluna1 = 0.01
         coluna2 = coluna1 + multiplo_coluna
         coluna3 = coluna2 + multiplo_coluna
@@ -170,6 +170,8 @@ class CadastroClientes(Configs):
             #     'relx': coluna3,
             #     'rely': linha3
             # },
+        }
+        Texts = {
             'Descrição': {
                 'relx': coluna1,
                 'rely': linha3 + defasagem_para_infos,
@@ -179,14 +181,30 @@ class CadastroClientes(Configs):
         }
         lista_suspenca = {
             'Categoria': {
-                'relx': coluna5,
-                'rely': linha2 + defasagem_para_infos,
-                # 'relwidth': defasagem_para_infos
+                'param': {
+                    'master': self.frame_formulario,
+                    'values': ['Completa', 'Cliente', 'Gestor', 'Vendedor', 'Compras'],
+                    'state': 'readonly',
+                    'name': 'categoria'
+                },
+                'place': {
+                    'relx': coluna5,
+                    'rely': linha2 + defasagem_para_infos,
+                    'relwidth': defasagem_para_infos
+                }
             },
             'Tipo': {
-                'relx': coluna6,
-                'rely': linha2 + defasagem_para_infos,
-                # 'relwidth': defasagem_para_infos
+                'param': {
+                    'master': self.frame_formulario,
+                    'values': ['Completa', 'Cliente', 'Gestor', 'Vendedor', 'Compras'],
+                    'state': 'readonly',
+                    'name': 'tipo'
+                },
+                'place': {
+                    'relx': coluna6,
+                    'rely': linha2 + defasagem_para_infos,
+                    'relwidth': defasagem_para_infos
+                },
             },
         }
 
@@ -195,19 +213,20 @@ class CadastroClientes(Configs):
             Label(master = self.frame_formulario, **self.labels_params, text = label).place(**labels[label])
 
         # Cria entrys
-        entrys_criadas = list()
         for entry in entrys:
             Entry(master = self.frame_formulario, **self.entrys_params, name = entry.lower()).place(**entrys[entry])
-            entrys_criadas.append(self.frame_formulario.children.get(f'{entry.lower()}'))
+
+        # Cria Text
+        for text in Texts:
+            Text(
+                master = self.frame_formulario, **self.entrys_params, name = text.lower(), undo = True, endline = 4,
+            ).place(
+                **Texts[text]
+            )
 
         # Cria campo calendário
         calendario1 = DateEntry(self.frame_formulario, **self.entrys_params, locale = "pt_br")
         calendario1.place(relx = coluna4, rely = linha2 + defasagem_para_infos, relwidth = defasagem_para_infos + 0.01)
-        entrys_criadas.insert(6, calendario1)
-
-        # Reorganizando a função TAB
-        for entry in entrys_criadas:
-            entry.lift()
 
         child_get = self.frame_formulario.children.get
         child_get('id').insert(0, '0'), child_get('id').configure(state = 'disabled')
@@ -215,14 +234,25 @@ class CadastroClientes(Configs):
 
         # Dropdown do nível de permissão
         niveis_permissao = ['Completa', 'Cliente', 'Gestor', 'Vendedor', 'Compras']
-        option = StringVar(master = self.frame_formulario, value = niveis_permissao[0])
         for lista in lista_suspenca:
-            OptionMenu(
-                self.frame_formulario, option, *niveis_permissao
-            ).place(
-                **lista_suspenca[lista]
-            )
-            entrys_criadas.append(option)
+            Combobox(**lista_suspenca[lista]['param']).place(**lista_suspenca[lista]['place'])
+
+        # Reorganizando a função TAB
+        formulario_get = self.frame_formulario.children
+        campos_criados = [
+            formulario_get['id'],
+            formulario_get['nome'],
+            formulario_get['fabricante'],
+            formulario_get['quantidade'],
+            formulario_get['custo'],
+            formulario_get['cód de barras'],
+            calendario1,
+            formulario_get['categoria'],
+            formulario_get['tipo'],
+            formulario_get['descrição']
+        ]
+        for campo in campos_criados:
+            campo.lift()
 
         # Criação dos botões
         button_width = 0.07
@@ -230,17 +260,17 @@ class CadastroClientes(Configs):
             'Salvar': {
                 'param': dict(command = lambda: self.salvar(entrys_criadas), master = self.frame_formulario,
                               text = 'Salvar'),
-                'place': dict(relx = 0.75, rely = linha4, relwidth = button_width, relheight = 0.18)
+                'place': dict(relx = coluna5, rely = linha4, relwidth = button_width, relheight = 0.18)
             },
             'Limpar': {
                 'param': dict(command = lambda: self.limpar(entrys_criadas), master = self.frame_formulario,
                               text = 'Limpar'),
-                'place': dict(relx = 0.75 + 0.08, rely = linha4, relwidth = button_width, relheight = 0.18)
+                'place': dict(relx = coluna5 + 0.08, rely = linha4, relwidth = button_width, relheight = 0.18)
             },
             'Buscar': {
                 'param': dict(command = lambda: self.buscar(entrys_criadas), master = self.frame_formulario,
                               text = 'Buscar'),
-                'place': dict(relx = 0.075 + 0.16, rely = linha4, relwidth = button_width, relheight = 0.18)
+                'place': dict(relx = coluna5 + 0.16, rely = linha4, relwidth = button_width, relheight = 0.18)
             }
         }
         for botao in botoes:
