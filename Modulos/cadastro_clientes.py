@@ -4,6 +4,7 @@ from tkinter.ttk import Treeview
 from tkcalendar import DateEntry
 
 from configs import Configs
+from Modulos.construtor import Construtor
 
 
 class CadastroClientes(Configs):
@@ -52,17 +53,16 @@ class CadastroClientes(Configs):
     def inicia_frames(self):
         frames = {
             'frame_formulario': {
-                'params': dict(master = self.novo_cliente, name = 'frame_formulario'),
-                'grid': dict(relx = 0.01, rely = 0.01, relwidth = 0.98, relheight = 0.48)
+                'param': dict(master = self.novo_cliente, name = 'frame_formulario'),
+                'place': dict(relx = 0.01, rely = 0.01, relwidth = 0.98, relheight = 0.48)
             },
             'frame_lista_clientes': {
-                'params': dict(master = self.novo_cliente, name = 'frame_lista_clientes'),
-                'grid': dict(relx = 0.01, rely = 0.51, relwidth = 0.98, relheight = 0.48)
+                'param': dict(master = self.novo_cliente, name = 'frame_lista_clientes'),
+                'place': dict(relx = 0.01, rely = 0.51, relwidth = 0.98, relheight = 0.48)
             }
         }
         # Cria frame dos formulários
-        for frame in frames:
-            Frame(**self.frames_params, **frames[frame]['params']).place(**frames[frame]['grid'])
+        Construtor.frame(frames)
 
         # Seta marcador para as variáveis, para referenciarmos nos widgets
         self.frame_formulario = self.novo_cliente.children.get('frame_formulario')
@@ -201,17 +201,20 @@ class CadastroClientes(Configs):
             entry.lift()
 
         child_get = self.frame_formulario.children.get
-        child_get('id_entry').insert(0, '0'), child_get('id_entry').configure(state = 'disabled')
+        self.insert_id(value = 0)
         child_get('nome completo_entry').focus_set()
 
         # Dropdown do nível de permissão
         niveis_permissao = ['Completa', 'Cliente', 'Gestor', 'Vendedor', 'Compras']
-        option = StringVar(self.novo_cliente)
-        OptionMenu(
-            self.frame_formulario, option, *niveis_permissao
-        ).place(relx = coluna2, rely = linha4 + multiplo_linha_entrys - 0.02, relwidth = 0.15)
-        option.set(niveis_permissao[1])
-        entrys_criadas.append(option)
+        combos = {
+            'option': {
+                'param': {'master': self.frame_formulario, 'values': niveis_permissao, 'state': 'readonly'},
+                'place': dict(relx = coluna2, rely = linha4 + multiplo_linha_entrys - 0.02, relwidth = 0.15)
+            }
+        }
+        Construtor.combo_box(combos)
+        self.frame_formulario.children['option'].current(1)
+        entrys_criadas.append(self.frame_formulario.children['option'])
 
         # Criação dos botões
         button_width = 0.07
@@ -238,9 +241,9 @@ class CadastroClientes(Configs):
     def salvar(self, entrys_criadas):
         infos = [entry.get() for entry in entrys_criadas]
         nome_completo = infos[1]
-        numero = infos[9]
-        cidade = infos[8]
-        nivel = infos[10]
+        numero = infos[6]
+        cidade = infos[4]
+        nivel = infos[9]
         self.tabela.insert(parent = '', index = 'end', values = [nome_completo, numero, cidade, nivel])
 
     @staticmethod
@@ -284,6 +287,12 @@ class CadastroClientes(Configs):
         for coluna in colunas:
             tabela.heading(column = coluna, text = coluna)
             tabela.column(column = coluna, **colunas[coluna])
+
+    def insert_id(self, row=0, value=None):
+        frame_form_child_id = self.frame_formulario.children['id_entry']
+        frame_form_child_id['state'] = 'normal'
+        frame_form_child_id.insert(row, str(value))
+        frame_form_child_id['state'] = 'readonly'
 
 
 if __name__ == '__main__':

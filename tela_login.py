@@ -1,4 +1,6 @@
-from tkinter import Toplevel, Label, Entry, Button, StringVar
+from tkinter import Toplevel
+
+from Modulos.construtor import Construtor
 
 
 class Logon:
@@ -9,44 +11,68 @@ class Logon:
             tela_login.resizable(False, False)
             tela_login.title('Login')
 
-            Label(tela_login, text = 'Usuário').grid(row = 1, column = 1, padx = 5, pady = 5)
-            Label(tela_login, text = 'senha').grid(row = 2, column = 1, padx = 5, pady = 5)
-            Label(tela_login, text = 'IP do servidor').grid(row = 3, column = 1, padx = 5, pady = 5)
-
-            usuario = StringVar(master = tela_login, value = self.ultimo_user)
-            senha = StringVar(master = tela_login, value = '')
-            ip_servidor = StringVar(master = tela_login, value = self.ip_servidor)
+            labels = {
+                'usuario': {
+                    'param': {'master': tela_login, 'text': 'Usuário', 'font': 'arial 9 bold'},
+                    'grid': {'row': 1, 'column': 1, 'padx': 5, 'pady': 5, 'sticky': 'e'}
+                },
+                'senha': {
+                    'param': {'master': tela_login, 'text': 'Senha', 'font': 'arial 9 bold'},
+                    'grid': {'row': 2, 'column': 1, 'padx': 5, 'pady': 5, 'sticky': 'e'}
+                },
+                'ip_servidor': {
+                    'param': {'master': tela_login, 'text': 'IP do servidor', 'font': 'arial 9 bold'},
+                    'grid': {'row': 3, 'column': 1, 'padx': 5, 'pady': 5, 'sticky': 'e'}
+                }
+            }
+            Construtor.label(labels)
 
             entrys = {
                 'user': {
-                    'param': {'master': tela_login, 'textvariable': usuario, 'name': 'user'},
+                    'param': {'master': tela_login, 'name': 'user'},
                     'grid': {'row': 1, 'column': 2, 'padx': 5, 'pady': 5}
                 },
                 'senha': {
-                    'param': {'master': tela_login, 'textvariable': senha, 'name': 'senha'},
+                    'param': {'master': tela_login, 'name': 'senha', 'show': '*'},
                     'grid': {'row': 2, 'column': 2, 'padx': 5, 'pady': 5}
                 },
                 'ip_servidor': {
-                    'param': {'master': tela_login, 'textvariable': ip_servidor, 'name': 'ip_servidor'},
+                    'param': {'master': tela_login, 'name': 'ip_servidor'},
                     'grid': {'row': 3, 'column': 2, 'padx': 5, 'pady': 5}
                 }
             }
-            for entry in entrys:
-                Entry(**entrys[entry]['param']).grid(**entrys[entry]['grid'])
+            Construtor.entry(entrys)
 
-            btn = Button(tela_login, text = 'Login',
-                         command = lambda: self.logar(usuario.get(), senha.get(), ip_servidor.get())
-                         )
-            btn.grid(sticky = 'NS' + 'EW', row = 4, column = 1, columnspan = 2, padx = 5, pady = 5)
+            buttons = {
+                'bt_login': {
+                    'param': dict(master = tela_login, text = 'Login', command = self.__logar),
+                    'grid': dict(sticky = 'NS' + 'EW', row = 4, column = 1, columnspan = 2, padx = 5, pady = 5)
+                }
+            }
+            Construtor.button(buttons)
 
-            tela_login.winfo_children()[3].focus_set()
+            vcmd = (tela_login.register(self.__validate), '%S')
+
             child = tela_login.children
-            child.get('user').bind('<Return>', lambda e: tela_login.children.get('senha').focus_set())
-            child.get('senha').bind('<Return>', lambda e: self.logar(usuario.get(), senha.get(), ip_servidor.get()))
+            child['user'].focus_set()
+            child['user'].insert(0, self.ultimo_user)
+            child['user'].bind('<Return>', lambda e: child['senha'].focus_set(), add = '+')
+
+            child['senha'].bind('<Return>', lambda e: self.__logar())
+
+            child['ip_servidor'].insert(0, self.ip_servidor)
+            child['ip_servidor'].bind('<Return>', lambda e: self.__logar())
+            child['ip_servidor'].configure(dict(validate = 'key', validatecommand = vcmd))
+
+            tela_login.protocol(tela_login.protocol()[0], self.__close_event)
             self.tela_login = tela_login
 
-    def logar(self, usuario=None, senha=None, ip_servidor=None):
-        if self.valida_user(usuario) and self.valida_senha(senha):
+    def __logar(self):
+        child = self.root.children['painel_login'].children
+        usuario = child['user'].get()
+        senha = child['senha'].get()
+        ip_servidor = child['ip_servidor'].get()
+        if self.__valida_user(usuario) and self.__valida_senha(senha):
             self.logado = True
             self.user = usuario
             self.salvar_config('ip_servidor', ip_servidor)
@@ -56,9 +82,20 @@ class Logon:
             self.tela_login.destroy()
 
     @staticmethod
-    def valida_user(usuario):
-        return usuario.lower() == 'edimar'
+    def __valida_user(usuario):
+        return usuario == 'Edimar'
 
     @staticmethod
-    def valida_senha(senha):
+    def __valida_senha(senha):
         return senha == ''
+
+    @staticmethod
+    def __close_event():
+        pass
+
+    @staticmethod
+    def __validate(digito):
+        if digito.isdigit() or digito == '.':
+            return True
+        else:
+            return False

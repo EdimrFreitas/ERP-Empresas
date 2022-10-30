@@ -1,23 +1,23 @@
-import time
-from tkinter import *
+from tkinter import Tk, Menu
 from tkinter.messagebox import showinfo
-from os import system
-from threading import Thread, Semaphore
+from os.path import abspath
+from threading import Thread
 import subprocess
+from os import getpid
 
 from configs import Configs
 from tela_login import Logon
 
 
-class Menus:
+class Modulos:
     def cadastro_clientes(self):
         try:
             if self.cad_cli.is_alive():
                 raise showinfo('Já iniciado', 'Módulo já em execução')
         except AttributeError:
             pass
-        comando = f'python cadastro_clientes.py --user {self.user} --logado {self.logado}'
-        self.cad_cli = Thread(target = lambda: subprocess.call(comando), daemon = False)
+        path = abspath('./Modulos/cadastro_clientes.py')
+        self.cad_cli = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
         self.cad_cli.start()
 
     def cadastro_produtos(self):
@@ -26,8 +26,9 @@ class Menus:
                 raise showinfo('Já iniciado', 'Módulo já em execução')
         except AttributeError:
             pass
-        comando = f'py cadastro_produtos.py --user {self.user} --logado {self.logado}'
-        self.cad_prod = Thread(target = lambda: subprocess.call(comando), daemon = False)
+        path = abspath('./Modulos/cadastro_produtos.py')
+        comando = f'py {path} --user {self.user} --logado {self.logado}'
+        self.cad_prod = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False, name = 'cad_prod')
         self.cad_prod.start()
 
     def cadastro_servicos(self):
@@ -51,8 +52,11 @@ class Menus:
     def compras_periodo(self):
         pass
 
+    def abrir_modulo(self, path):
+        return f'py {path} --user {self.user} --logado {self.logado}'
 
-class Interface(Menus, Configs, Logon):
+
+class Interface(Modulos, Configs, Logon):
     logado = False
     menus_criados = list()
     user = None
@@ -61,6 +65,7 @@ class Interface(Menus, Configs, Logon):
         self.inicia_configs()
         self.inicia_root()
         self.inicia_menu()
+        self.root.after(100, self.login, *())
         self.root.mainloop()
 
     # Inicia a tela com nome da empresa
@@ -72,8 +77,7 @@ class Interface(Menus, Configs, Logon):
         root.geometry(f'{largura_tela}x{altura_tela}+50+30')
         root.configure(**self.root_params)
 
-        root.bind('<FocusIn>', lambda e: self.login())
-        root.bind('<Destroy>', lambda e: self.fechar_programas())
+        root.bind('<Destroy>', lambda e: self.fechar_programas)
 
         self.root = root
 
@@ -111,7 +115,8 @@ class Interface(Menus, Configs, Logon):
 
     @staticmethod
     def fechar_programas():
-        subprocess.call('taskkill /im python.exe', shell = True)
+        pid = getpid()
+        subprocess.call(f'taskkill /PID {pid} /T', shell = True)
 
 
 if __name__ == '__main__':
