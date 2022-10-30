@@ -245,7 +245,7 @@ class Construtor:
                             },
                             ...
                         }
-                             """
+        """
         for combo_box in kw:
             param = kw[combo_box]['param']
 

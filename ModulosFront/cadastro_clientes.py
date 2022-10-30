@@ -1,10 +1,10 @@
 from argparse import ArgumentParser
-from tkinter import Tk, Frame, Label, Entry, OptionMenu, Button, StringVar
+from tkinter import Tk, Label, Entry, Button
 from tkinter.ttk import Treeview
 from tkcalendar import DateEntry
 
-from configs import Configs
-from Modulos.construtor import Construtor
+from ModulosFront.configs import Configs
+from ModulosFront.construtor import Construtor
 
 
 class CadastroClientes(Configs):

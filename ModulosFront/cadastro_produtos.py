@@ -2,8 +2,8 @@
 from tkinter import Tk
 from tkcalendar import DateEntry
 
-from configs import Configs
-from Modulos.construtor import Construtor
+from ModulosFront.configs import Configs
+from ModulosFront.construtor import Construtor
 
 
 class Funcoes:

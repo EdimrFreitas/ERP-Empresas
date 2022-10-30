@@ -1,6 +1,6 @@
 from tkinter import Toplevel
 
-from Modulos.construtor import Construtor
+from ModulosFront.construtor import Construtor
 
 
 class Logon:

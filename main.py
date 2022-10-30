@@ -1,12 +1,13 @@
+from threading import Thread
 from tkinter import Tk, Menu
 from tkinter.messagebox import showinfo
-from os.path import abspath
-from threading import Thread
-import subprocess
 from os import getpid
+from os.path import abspath
+import subprocess
 
-from configs import Configs
-from tela_login import Logon
+from ModulosFront.configs import Configs
+from ModulosFront.construtor import Construtor
+from ModulosFront.tela_login import Logon
 
 
 class Modulos:
@@ -16,7 +17,7 @@ class Modulos:
                 raise showinfo('Já iniciado', 'Módulo já em execução')
         except AttributeError:
             pass
-        path = abspath('./Modulos/cadastro_clientes.py')
+        path = abspath('ModulosFront/cadastro_clientes.py')
         self.cad_cli = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
         self.cad_cli.start()
 
@@ -26,9 +27,9 @@ class Modulos:
                 raise showinfo('Já iniciado', 'Módulo já em execução')
         except AttributeError:
             pass
-        path = abspath('./Modulos/cadastro_produtos.py')
+        path = abspath('ModulosFront/cadastro_produtos.py')
         comando = f'py {path} --user {self.user} --logado {self.logado}'
-        self.cad_prod = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False, name = 'cad_prod')
+        self.cad_prod = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
         self.cad_prod.start()
 
     def cadastro_servicos(self):
@@ -77,7 +78,7 @@ class Interface(Modulos, Configs, Logon):
         root.geometry(f'{largura_tela}x{altura_tela}+50+30')
         root.configure(**self.root_params)
 
-        root.bind('<Destroy>', lambda e: self.fechar_programas)
+        root.bind('<Destroy>', lambda e: self.fechar_programas())
 
         self.root = root
 
