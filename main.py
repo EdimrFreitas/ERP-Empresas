@@ -16,27 +16,36 @@ class Modulos:
             if self.cad_cli.is_alive():
                 raise showinfo('Já iniciado', 'Módulo já em execução')
         except AttributeError:
-            pass
-        path = abspath('ModulosFront/cadastro_clientes.py')
-        self.cad_cli = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
-        self.cad_cli.start()
+            path = abspath('./ModulosFront/cadastro_clientes.py')
+            self.cad_cli = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
+            self.cad_cli.start()
 
     def cadastro_produtos(self):
         try:
             if self.cad_prod.is_alive():
                 raise showinfo('Já iniciado', 'Módulo já em execução')
         except AttributeError:
-            pass
-        path = abspath('ModulosFront/cadastro_produtos.py')
-        comando = f'py {path} --user {self.user} --logado {self.logado}'
-        self.cad_prod = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
-        self.cad_prod.start()
+            path = abspath('./ModulosFront/cadastro_produtos.py')
+            self.cad_prod = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
+            self.cad_prod.start()
 
     def cadastro_servicos(self):
-        pass
+        try:
+            if self.cad_serv.is_alive():
+                raise showinfo('Já iniciado', 'Módulo já em execução')
+        except AttributeError:
+            path = abspath('./ModulosFront/cadastro_servicos.py')
+            self.cad_serv = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
+            self.cad_serv.start()
 
     def controle_estoque(self):
-        pass
+        try:
+            if self.cont_estq.is_alive():
+                raise showinfo('Já iniciado', 'Módulo já em execução')
+        except AttributeError:
+            path = abspath('./ModulosFront/controle_estoque.py')
+            self.cont_estq = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
+            self.cont_estq.start()
 
     def vendas(self):
         pass

@@ -276,10 +276,11 @@ class CadastroClientes(Configs):
                 'anchor': 'center'
             }
         }
-        tabela = Treeview(master = self.frame_lista_clientes, selectmode = 'browse',
-                          columns = [str(coluna) for coluna in colunas], show = 'tree headings'
-                          )
-        tabela.pack(expand = True)
+        tabela = Treeview(
+            master = self.frame_lista_clientes, selectmode = 'browse',
+            columns = [str(coluna) for coluna in colunas], show = 'tree headings'
+        )
+        tabela.place(relx = 0, rely = 0, relwidth = 1, relheight = 1)
 
         self.tabela = tabela
 

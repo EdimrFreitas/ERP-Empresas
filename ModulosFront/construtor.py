@@ -1,5 +1,5 @@
 # Widgets antigos
-from tkinter.ttk import Combobox, Progressbar, Separator, Treeview
+from tkinter.ttk import Combobox, Progressbar, Separator, Treeview, Notebook
 
 # Botões
 from tkinter import Button, Radiobutton, Checkbutton
@@ -10,9 +10,6 @@ from tkinter import Label, Entry, Frame, Spinbox, LabelFrame, PanedWindow, Canva
 # Menus
 from tkinter import Menu, Menubutton, OptionMenu
 
-# Variáveis
-from tkinter import StringVar
-
 # Caixas de menssagem
 from tkinter.messagebox import showerror, showinfo, showwarning
 from tkinter.messagebox import askquestion, askyesno, askokcancel, askretrycancel, askyesnocancel
@@ -20,23 +17,8 @@ from tkinter.messagebox import askquestion, askyesno, askokcancel, askretrycance
 from tkinter.filedialog import askopenfilename
 
 
-INFO = 'Info'
-
-
 class Construtor:
-    """Estrutura geral:
-    widgets = dict(
-        nome_do_widget = dict(
-            param = dict(kwargs),
-            "position" = dict(kwargs),
-        )
-    )
-    sendo que:
-    'nome_do_widget' será o nome de children do widget
-    'param' são os parâmetros do respectivo widget criado
-    "position" pode ser trocado por uma das opções [pack, place, or grid]
-
-    Serve para criar widgets de forma mais limpa
+    """Serve para criar widgets de forma mais limpa
     No geral em todos é obrigatório colocar:
     master, name, background or bg, foreground or fg e font
 
@@ -44,25 +26,39 @@ class Construtor:
     vamos definindo todas as variáveis
     """
 
-    @classmethod
-    def labelframe(cls, kw=None):
-        """master, background or bg, border or bd, text, anchor
-
-        
-        """
-        for labelframe in kw:
-            param = kw[labelframe]['param']
-            nw_widget = LabelFrame(**param, name = labelframe)
-            cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = labelframe)
-
+    # Countainers ------------------------------------------------------------------------------------------------------
     @classmethod
     def frame(cls, kw=None):
-        """O parâmetro name será automaticamente o nome do widget
-        também deverá estar sempre em letras minusculas
-
-        master, background or bg, border or bd, anchor, cursor
-
-        
+        """ Estrutura:
+            frames = {
+                nome_da_frame: {
+                    'param': {
+                        master: Misc | None = ...,
+                        background: str = ...,
+                        bd: str | float = ...,
+                        bg: str = ...,
+                        border: str | float = ...,
+                        borderwidth: str | float = ...,
+                        class_: str = ...,
+                        colormap: Literal["new", ""] | Misc = ...,
+                        container: bool = ...,
+                        cursor: str | tuple[str] | ... | tuple[str, str, str, ,str] = ...,
+                        height: str | float = ...,
+                        highlightbackground: str = ...,
+                        highlightcolor: str = ...,
+                        highlightthickness: str | float = ...,
+                        name: str = ...,
+                        padx: str | float = ...,
+                        pady: str | float = ...,
+                        relief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        takefocus: int | Literal[""] | (str) -> bool | None = ...,
+                        visual: str | tuple[str, int] = ...,
+                        width: str | float = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
         """
         for frame in kw:
             param = kw[frame]['param']
@@ -74,18 +70,250 @@ class Construtor:
             cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = frame)
 
     @classmethod
-    def label(cls, kw=None):
+    def label_frame(cls, kw=None):
+        """ Estrutura:
+            labelframes = {
+                nome_da_labelframe: {
+                    'param': {
+                        master: Misc | None = ...,
+                        background or bg: str = ...,
+                        border or bd: str | float = ...,
+                        borderwidth: str | float = ...,
+                        class_: str = ...,
+                        colormap: Literal["new", ""] | Misc = ...,
+                        container: bool = ...,
+                        cursor: str | tuple[str] | ... | tuple[str, str, str, str] = ...,
+                        font: Any = ...,
+                        foreground or fg: str = ...,
+                        height: str | float = ...,
+                        highlightbackground: str = ...,
+                        highlightcolor: str = ...,
+                        highlightthickness: str | float = ...,
+                        labelanchor: Literal["nw", "n", "ne", "en", "e", "es", "se", "s", "sw", "ws", "w", "wn"] = ...,
+                        labelwidget: Misc = ...,
+                        name: str = ...,
+                        padx: str | float = ...,
+                        pady: str | float = ...,
+                        relief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        takefocus: int | Literal[""] | (str) -> bool | None = ...,
+                        text: float | str = ...,
+                        visual: str | tuple[str, int] = ...,
+                        width: str | float = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
         """
-        O parâmetro name será automaticamente o nome do widget
-        Neste widget, por padrão sempre teremos uma variável criada
-        para deficnição como textvariable
-        master, background or bg, border or bd, text,
-        anchor, cursor
-        
+        for labelframe in kw:
+            param = kw[labelframe]['param']
+
+            if not param.get('name', False):
+                param['name'] = labelframe
+
+            nw_widget = LabelFrame(**param)
+            cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = labelframe)
+
+    @classmethod
+    def paned_window(cls, kw=None):
+        """ Estrutura:
+            paned_windows = {
+                nome_da_paned_window: {
+                    'param': {
+                        master: Misc | None = ...,
+                        background ou bg: str = ...,
+                        border ou bd: str | float = ...,
+                        borderwidth: str | float = ...,
+                        cursor: str | tuple[str] | ... | tuple[str, str, str, str] = ...,
+                        handlepad: str | float = ...,
+                        handlesize: str | float = ...,
+                        height: str | float = ...,
+                        name: str = ...,
+                        opaqueresize: bool = ...,
+                        orient: Literal["horizontal", "vertical"] = ...,
+                        proxybackground: str = ...,
+                        proxyborderwidth: str | float = ...,
+                        proxyrelief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        relief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        sashcursor: str | tuple[str] | ... | tuple[str, str, str, str] = ...,
+                        sashpad: str | float = ...,
+                        sashrelief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        sashwidth: str | float = ...,
+                        showhandle: bool = ...,
+                        width: str | float = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
+        """
+        for paned_window in kw:
+            param = kw[paned_window]['param']
+
+            if not param.get('name', False):
+                param['name'] = paned_window
+
+            nw_widget = PanedWindow(**param)
+            cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = paned_window)
+
+    @classmethod
+    def notebook(cls, kw=None):
+        """ Estrutura:
+            notebooks = {
+                nome_do_notebook: {
+                    'param': {
+                        master: Misc | None = ...,
+                        class_: str = ...,
+                        cursor: Any = ...,
+                        height: int = ...,
+                        name: str = ...,
+                        padding: Any = ...,
+                        style: str = ...,
+                        takefocus: Any = ...,
+                        width: int = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter},
+                },
+                ...,
+            }
+        """
+        for notebook in kw:
+            param = kw[notebook]['param']
+
+            if not param.get('name', False):
+                param['name'] = notebook
+            print(param)
+            nw_widget = Notebook(**param)
+            cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = notebook)
+
+    @classmethod
+    def add_abas(cls, kw=None):
+        """abas: {
+            notebook: {Widget ao qual serão adicionados as abas},
+            nome_aba_1: {
+                child: Widget, geralmente a frame
+                state: Literal["normal", "disabled", "hidden"] = ...,
+                sticky: str = ...,
+                padding: Any = ...,
+                text: str = ...,
+                image: Any = ...,
+                compound: Any = ...,
+                underline: int = ...
+            },
+            ...,
+        },
+        """
+        abas = kw['abas']
+
+        for aba in abas:
+            info_aba = kw['abas'][aba]
+
+            if not info_aba.get('text'):
+                info_aba['text'] = aba
+
+            kw['notebook'].add(**info_aba)
+
+    @classmethod
+    def cavas(cls, kw=None):
+        """ Estrutura:
+            cavas = {
+                nome_da_cavas: {
+                    'param': {
+                        master: Misc | None = ...,
+                        background ou bg: str = ...,
+                        border ou bd: str | float = ...,
+                        borderwidth: str | float = ...,
+                        closeenough: float = ...,
+                        confine: bool = ...,
+                        cursor: str | tuple[str] | ... | tuple[str, str, str, str] = ...,
+                        height: str | float = ...,
+                        highlightbackground: str = ...,
+                        highlightcolor: str = ...,
+                        highlightthickness: str | float = ...,
+                        insertbackground: str = ...,
+                        insertborderwidth: str | float = ...,
+                        insertofftime: int = ...,
+                        insertontime: int = ...,
+                        insertwidth: str | float = ...,
+                        name: str = ...,
+                        offset: Any = ...,
+                        relief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        scrollregion: tuple[str | float, str | float, str | float, str | float] | tuple = ...,
+                        selectbackground: str = ...,
+                        selectborderwidth: str | float = ...,
+                        selectforeground: str = ...,
+                        state: Literal["normal", "disabled"] = ...,
+                        takefocus: int | Literal[""] | (str) -> bool | None = ...,
+                        width: str | float = ...,
+                        xscrollcommand: str | (float, float) -> Any = ...,
+                        xscrollincrement: str | float = ...,
+                        yscrollcommand: str | (float, float) -> Any = ...,
+                        yscrollincrement: str | float = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
+        """
+        for cavas in kw:
+            param = kw[cavas]['param']
+
+            if not param.get('name', False):
+                param['name'] = cavas
+
+            nw_widget = Canvas(**param)
+            cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = cavas)
+
+    # Labels -----------------------------------------------------------------------------------------------------------
+    @classmethod
+    def label(cls, kw=None):
+        """ Estrutura:
+            label = {
+                nome_da_label: {
+                    'param': {
+                        master: Misc | None = ...,
+                        activebackground: str = ...,
+                        activeforeground: str = ...,
+                        anchor: Literal["nw", "n", "ne", "w", "center", "e", "sw", "s", "se"] = ...,
+                        background or bg: str = ...,
+                        bitmap: str = ...,
+                        border or bd: str | float = ...,
+                        borderwidth: str | float = ...,
+                        compound: Literal["top", "left", "center", "right", "bottom", "none"] = ...,
+                        cursor: str | tuple[str] | ... | tuple[str, str, str, str] = ...,
+                        disabledforeground: str = ...,
+                        font: Any = ...,
+                        foreground or fg: str = ...,
+                        height: str | float = ...,
+                        highlightbackground: str = ...,
+                        highlightcolor: str = ...,
+                        highlightthickness: str | float = ...,
+                        image: _Image | str = ...,
+                        justify: Literal["left", "center", "right"] = ...,
+                        name: str = ...,
+                        padx: str | float = ...,
+                        pady: str | float = ...,
+                        relief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        state: Literal["normal", "active", "disabled"] = ...,
+                        takefocus: int | Literal[""] | (str) -> bool | None = ...,
+                        text: float | str = ...,
+                        textvariable: Variable = ...,
+                        underline: int = ...,
+                        width: str | float = ...,
+                        wraplength: str | float = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
         """
         for label in kw:
             param = kw[label]['param']
-            nw_widget = Label(**param, name = label)
+
+            if not param.get('name', False):
+                param['name'] = label
+
+            nw_widget = Label(**param)
             cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = label)
 
     # Input de texto ---------------------------------------------------------------------------------------------------
@@ -99,7 +327,7 @@ class Construtor:
                     background or bg: str = ...,
                     border or bd: str | float = ...,
                     borderwidth: str | float = ...,
-                    cursor: str | tuple[str] | tuple[str, str] | tuple[str, str, str] | tuple[str, str, str, str] = ...,
+                    cursor: str | tuple[str] | ... | tuple[str, str, str, str] = ...,
                     disabledbackground: str = ...,
                     disabledforeground: str = ...,
                     exportselection: bool = ...,
@@ -158,7 +386,7 @@ class Construtor:
                             blockcursor: bool = ...,
                             border or bd: str | float = ...,
                             borderwidth: str | float = ...,
-                            cursor: str | tuple[str] | tuple[str, str] | tuple[str, str, str] = ...,
+                            cursor: str | tuple[str] | ... = ...,
                             endline: int | Literal[""] = ...,
                             exportselection: bool = ...,
                             font: Any = ...,
@@ -215,36 +443,36 @@ class Construtor:
     @classmethod
     def combo_box(cls, kw=None):
         """ Estrutura:
-                        texts = {
-                            nome_da_text: {
-                                'param': {
-                                    master: Misc | None = ...,
-                                    background: Any = ...,
-                                     class_: str = ...,
-                                     cursor: Any = ...,
-                                     exportselection: bool = ...,
-                                     font: Any = ...,
-                                     foreground: Any = ...,
-                                     height: int = ...,
-                                     invalidcommand: Any = ...,
-                                     justify: Literal["left", "center", "right"] = ...,
-                                     name: str = ...,
-                                     postcommand: () -> Any | str = ...,
-                                     show: Any = ...,
-                                     state: str = ...,
-                                     style: str = ...,
-                                     takefocus: Any = ...,
-                                     textvariable: Variable = ...,
-                                     validate: Literal["none", "focus", "focusin", "focusout", "key", "all"] = ...,
-                                     validatecommand: Any = ...,
-                                     values: list[str] | tuple[str, ...] = ...,
-                                     width: int = ...,
-                                     xscrollcommand: Any = ...
-                                },
-                                pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
-                            },
-                            ...
-                        }
+            comboboxes = {
+                nome_da_combobox: {
+                    'param': {
+                        master: Misc | None = ...,
+                        background: Any = ...,
+                        class_: str = ...,
+                        cursor: Any = ...,
+                        exportselection: bool = ...,
+                        font: Any = ...,
+                        foreground: Any = ...,
+                        height: int = ...,
+                        invalidcommand: Any = ...,
+                        justify: Literal["left", "center", "right"] = ...,
+                        name: str = ...,
+                        postcommand: () -> Any | str = ...,
+                        show: Any = ...,
+                        state: str = ...,
+                        style: str = ...,
+                        takefocus: Any = ...,
+                        textvariable: Variable = ...,
+                        validate: Literal["none", "focus", "focusin", "focusout", "key", "all"] = ...,
+                        validatecommand: Any = ...,
+                        values: list[str] | tuple[str, ...] = ...,
+                        width: int = ...,
+                        xscrollcommand: Any = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
         """
         for combo_box in kw:
             param = kw[combo_box]['param']
@@ -257,69 +485,388 @@ class Construtor:
 
     @classmethod
     def list_box(cls, kw=None):
+        """ Estrutura:
+            list_boxes = {
+                nome_da_list_box: {
+                    'param': {
+                        master: Misc | None = ...,
+                        activestyle: Literal["dotbox", "none", "underline"] = ...,
+                        background or bg: str = ...,
+                        border or bd: str | float = ...,
+                        borderwidth: str | float = ...,
+                        cursor: str | tuple[str] | ... | tuple[str, str, str, str] = ...,
+                        disabledforeground: str = ...,
+                        exportselection: int = ...,
+                        font: Any = ...,
+                        foreground or fg: str = ...,
+                        height: int = ...,
+                        highlightbackground: str = ...,
+                        highlightcolor: str = ...,
+                        highlightthickness: str | float = ...,
+                        justify: Literal["left", "center", "right"] = ...,
+                        listvariable: Variable = ...,
+                        name: str = ...,
+                        relief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        selectbackground: str = ...,
+                        selectborderwidth: str | float = ...,
+                        selectforeground: str = ...,
+                        selectmode: str = ...,
+                        setgrid: bool = ...,
+                        state: Literal["normal", "disabled"] = ...,
+                        takefocus: int | Literal[""] | (str) -> bool | None = ...,
+                        width: int = ...,
+                        xscrollcommand: str | (float, float) -> Any = ...,
+                        yscrollcommand: str | (float, float) -> Any = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
+                """
         for list_box in kw:
             param = kw[list_box]['param']
-            nw_widget = Listbox(**param, name = list_box)
+
+            if not param.get('name', False):
+                param['name'] = list_box
+
+            nw_widget = Listbox(**param)
             cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = list_box)
 
     @classmethod
     def spinbox(cls, kw=None):
+        """ Estrutura:
+            spin_boxes = {
+                nome_da_spin_box: {
+                    'param': {
+                        master: Misc | None = ...,
+                        activebackground: str = ...,
+                        background or bg: str = ...,
+                        border or bd: str | float = ...,
+                        borderwidth: str | float = ...,
+                        buttonbackground: str = ...,
+                        buttoncursor: str | tuple[str] | ... | tuple[str, str, str, str] = ...,
+                        buttondownrelief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        buttonuprelief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        command: () -> Any | str | list[str] | tuple[str, ...] = ...,
+                        cursor: str | tuple[str] | ... | tuple[str, str, str, str] = ...,
+                        disabledbackground: str = ...,
+                        disabledforeground: str = ...,
+                        exportselection: bool = ...,
+                        font: Any = ...,
+                        foreground or fg: str = ...,
+                        format: str = ...,
+                        from_: float = ...,
+                        highlightbackground: str = ...,
+                        highlightcolor: str = ...,
+                        highlightthickness: str | float = ...,
+                        increment: float = ...,
+                        insertbackground: str = ...,
+                        insertborderwidth: str | float = ...,
+                        insertofftime: int = ...,
+                        insertontime: int = ...,
+                        insertwidth: str | float = ...,
+                        invalidcommand or invcmd: () -> bool | str | list[str] | tuple[str, ...] = ...,
+                        justify: Literal["left", "center", "right"] = ...,
+                        name: str = ...,
+                        readonlybackground: str = ...,
+                        relief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        repeatdelay: int = ...,
+                        repeatinterval: int = ...,
+                        selectbackground: str = ...,
+                        selectborderwidth: str | float = ...,
+                        selectforeground: str = ...,
+                        state: Literal["normal", "disabled", "readonly"] = ...,
+                        takefocus: int | Literal[""] | (str) -> bool | None = ...,
+                        textvariable: Variable = ...,
+                        to: float = ...,
+                        validate: Literal["none", "focus", "focusin", "focusout", "key", "all"] = ...,
+                        validatecommand or vcmd: () -> bool | str | list[str] | tuple[str, ...] = ...,
+                        values: list[str] | tuple[str, ...] = ...,
+                        width: int = ...,
+                        wrap: bool = ...,
+                        xscrollcommand: str | (float, float) -> Any = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
+        """
         for spin_box in kw:
             param = kw[spin_box]['param']
-            nw_widget = Spinbox(**param, name = spin_box)
+
+            if not param.get('name', False):
+                param['name'] = spin_box
+
+            nw_widget = Spinbox(**param)
             cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = spin_box)
 
     # Botões -----------------------------------------------------------------------------------------------------------
     @classmethod
     def button(cls, kw=None):
+        """ Estrutura:
+            buttons = {
+                nome_do_button: {
+                    'param': {
+                        master: Misc | None = ...,
+                        activebackground: str = ...,
+                        activeforeground: str = ...,
+                        anchor: Literal["nw", "n", "ne", "w", "center", "e", "sw", "s", "se"] = ...,
+                        background or bg: str = ...,
+                        bitmap: str = ...,
+                        border or bd: str | float = ...,
+                        borderwidth: str | float = ...,
+                        command: str | () -> Any = ...,
+                        compound: Literal["top", "left", "center", "right", "bottom", "none"] = ...,
+                        cursor: str | tuple[str] | ... | tuple[str, str, str, str] = ...,
+                        default: Literal["normal", "active", "disabled"] = ...,
+                        disabledforeground: str = ...,
+                        font: Any = ...,
+                        foreground or fg: str = ...,
+                        height: str | float = ...,
+                        highlightbackground: str = ...,
+                        highlightcolor: str = ...,
+                        highlightthickness: str | float = ...,
+                        image: _Image | str = ...,
+                        justify: Literal["left", "center", "right"] = ...,
+                        name: str = ...,
+                        overrelief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        padx: str | float = ...,
+                        pady: str | float = ...,
+                        relief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        repeatdelay: int = ...,
+                        repeatinterval: int = ...,
+                        state: Literal["normal", "active", "disabled"] = ...,
+                        takefocus: int | Literal[""] | (str) -> bool | None = ...,
+                        text: float | str = ...,
+                        textvariable: Variable = ...,
+                        underline: int = ...,
+                        width: str | float = ...,
+                        wraplength: str | float = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
+        """
         for button in kw:
             param = kw[button]['param']
-            nw_widget = Button(**param, name = button)
+
+            if not param.get('name', False):
+                param['name'] = button
+
+            nw_widget = Button(**param)
             cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = button)
+
+    @classmethod
+    def check_button(cls, kw=None):
+        """ Estrutura:
+            check_buttons = {
+                nome_do_check_button: {
+                    'param': {
+                        master: Misc | None = ...,
+                        activebackground: str = ...,
+                        activeforeground: str = ...,
+                        anchor: Literal["nw", "n", "ne", "w", "center", "e", "sw", "s", "se"] = ...,
+                        background oor bg: str = ...,
+                        bitmap: str = ...,
+                        border or bd: str | float = ...,
+                        borderwidth: str | float = ...,
+                        command: str | () -> Any = ...,
+                        compound: Literal["top", "left", "center", "right", "bottom", "none"] = ...,
+                        cursor: str | tuple[str] | ... | tuple[str, str, str, str] = ...,
+                        disabledforeground: str = ...,
+                        font: Any = ...,
+                        foreground or fg: str = ...,
+                        height: str | float = ...,
+                        highlightbackground: str = ...,
+                        highlightcolor: str = ...,
+                        highlightthickness: str | float = ...,
+                        image: _Image | str = ...,
+                        indicatoron: bool = ...,
+                        justify: Literal["left", "center", "right"] = ...,
+                        name: str = ...,
+                        offrelief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        offvalue: Any = ...,
+                        onvalue: Any = ...,
+                        overrelief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        padx: str | float = ...,
+                        pady: str | float = ...,
+                        relief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        selectcolor: str = ...,
+                        selectimage: _Image | str = ...,
+                        state: Literal["normal", "active", "disabled"] = ...,
+                        takefocus: int | Literal[""] | (str) -> bool | None = ...,
+                        text: float | str = ...,
+                        textvariable: Variable = ...,
+                        tristateimage: _Image | str = ...,
+                        tristatevalue: Any = ...,
+                        underline: int = ...,
+                        variable: Variable | Literal[""] = ...,
+                        width: str | float = ...,
+                        wraplength: str | float = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
+        """
+        for check_button in kw:
+            param = kw[check_button]['param']
+
+            if not param.get('name', False):
+                param['name'] = check_button
+
+            nw_widget = Checkbutton(**param)
+            cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = check_button)
+
+    @classmethod
+    def radio_button(cls, kw=None):
+        """ Estrutura:
+            radio_buttons = {
+                nome_do_radio_button: {
+                    'param': {
+                        master: Misc | None = ...,
+                        activebackground: str = ...,
+                        activeforeground: str = ...,
+                        anchor: Literal["nw", "n", "ne", "w", "center", "e", "sw", "s", "se"] = ...,
+                        background or bg: str = ...,
+                        bitmap: str = ...,
+                        border or bd: str | float = ...,
+                        borderwidth: str | float = ...,
+                        command: str | () -> Any = ...,
+                        compound: Literal["top", "left", "center", "right", "bottom", "none"] = ...,
+                        cursor: str | tuple[str] | ... | tuple[str, str, str, str] = ...,
+                        disabledforeground: str = ...,
+                        font: Any = ...,
+                        foreground or fg: str = ...,
+                        height: str | float = ...,
+                        highlightbackground: str = ...,
+                        highlightcolor: str = ...,
+                        highlightthickness: str | float = ...,
+                        image: _Image | str = ...,
+                        indicatoron: bool = ...,
+                        justify: Literal["left", "center", "right"] = ...,
+                        name: str = ...,
+                        overrelief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        padx: str | float = ...,
+                        pady: str | float = ...,
+                        relief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                        repeatdelay: int = ...,
+                        repeatinterval: int = ...,
+                        state: Literal["normal", "active", "disabled"] = ...,
+                        takefocus: int | Literal[""] | (str) -> bool | None = ...,
+                        text: float | str = ...,
+                        textvariable: Variable = ...,
+                        tristateimage: _Image | str = ...,
+                        tristatevalue: Any = ...,
+                        underline: int = ...,
+                        width: str | float = ...,
+                        wraplength: str | float = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
+        """
+        for radio_button in kw:
+            param = kw[radio_button]['param']
+
+            if not param.get('name', False):
+                param['name'] = radio_button
+
+            nw_widget = Radiobutton(**param)
+            cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = radio_button)
 
     # Barra de carregamento --------------------------------------------------------------------------------------------
     @classmethod
     def progressbar(cls, kw=None):
+        """ Estrutura:
+            radio_buttons = {
+                nome_do_radio_button: {
+                    'param': {
+                        master: Misc | None = ...,
+                        class_: str = ...,
+                        cursor: Any = ...,
+                        length: Any = ...,
+                        maximum: float = ...,
+                        mode: Literal["determinate", "indeterminate"] = ...,
+                        name: str = ...,
+                        orient: Literal["horizontal", "vertical"] = ...,
+                        phase: int = ...,
+                        style: str = ...,
+                        takefocus: Any = ...,
+                        value: float = ...,
+                        variable: IntVar | DoubleVar = ..
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
+        """
         for progressbar in kw:
             param = kw[progressbar]['param']
+
+            if not param.get('name', False):
+                param['name'] = progressbar
+
             nw_widget = Progressbar(**param, name = progressbar)
             cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = progressbar)
 
     # Organizadores ----------------------------------------------------------------------------------------------------
     @classmethod
     def separator(cls, kw=None):
+        """ Estrutura:
+            radio_buttons = {
+                nome_do_radio_button: {
+                    'param': {
+                        master: Misc | None = ...,
+                        class_: str = ...,
+                        cursor: Any = ...,
+                        name: str = ...,
+                        orient: Literal["horizontal", "vertical"] = ...,
+                        style: str = ...,
+                        takefocus: Any = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
+        """
         for separator in kw:
             param = kw[separator]['param']
+
+            if not param.get('name'):
+                param['name'] = separator
+
             nw_widget = Separator(**param, name = separator)
             cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = separator)
 
     # Criação de menus -------------------------------------------------------------------------------------------------
     @classmethod
     def menu(cls, kw=None):
-        """O criador de menus depende das informações
-        master: Misc | None = ...,
-        activebackground: str = ...,
-        activeborderwidth: str | float = ...,
-        activeforeground: str = ...,
-        background: str = ... or bg: str = ...,
-        border: str | float = ... or bd: str | float = ...,
-        borderwidth: str | float = ...,
-        cursor: str | tuple[str] | tuple[str, str] | tuple[str, str, str] | tuple[str, str, str, str] = ...,
-        disabledforeground: str = ...,
-        font: Any = ...,
-        foreground: str = ... or fg: str = ...,
-        name: str = ...,
-        postcommand: () -> Any | str = ...,
-        relief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
-        selectcolor: str = ...,
-        takefocus: int | Literal[""] | (str) -> bool | None = ...,
-        tearoff: int = ...,
-        tearoffcommand: (str, str) -> Any | str = ...,
-        title: str = ...,
-        type: Literal["menubar", "tearoff", "normal"] = ..
+        """ Estrutura:
+            radio_buttons = {
+                nome_do_radio_button: {
+                    'param': {
+                        master: Misc | None = ...,
+                        class_: str = ...,
+                        cursor: Any = ...,
+                        name: str = ...,
+                        orient: Literal["horizontal", "vertical"] = ...,
+                        style: str = ...,
+                        takefocus: Any = ...
+                    },
+                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+                },
+                ...
+            }
         """
         for menu in kw:
             param = kw[menu]['param']
+
+            if not param.get('name'):
+                param['name'] = menu
+
             nw_widget = Menu(**param, name = menu)
             cls.__posiciona(nw_widget = nw_widget, kw = kw, widget = menu)
 

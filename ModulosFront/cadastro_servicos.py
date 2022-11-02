@@ -7,6 +7,7 @@ from ModulosFront.construtor import Construtor
 
 
 class Funcoes:
+
     @staticmethod
     def verifica_login(user=None, logado=False):
         if not user or not logado:
@@ -30,10 +31,10 @@ class Funcoes:
     def buscar(self):
         pass
 
-    def insert_id(self, row=0, value=None):
+    def insert_id(self, value=None, init=0):
         frame_form_child_id = self.frame_formulario.children['id']
         frame_form_child_id['state'] = 'normal'
-        frame_form_child_id.insert(row, str(value))
+        frame_form_child_id.insert(init, str(value))
         frame_form_child_id['state'] = 'readonly'
 
     @property
@@ -49,12 +50,11 @@ class Funcoes:
         formulario_get = self.frame_formulario.children.get
         campos_criados = [
             formulario_get('id'),
-            formulario_get('nome'),
-            formulario_get('fabricante'),
+            formulario_get('nome_servico'),
+            self.data_criacao,
             formulario_get('quantidade'),
             formulario_get('custo'),
-            formulario_get('cod_barras'),
-            self.calendario1,
+            formulario_get('margem_de_lucro'),
             formulario_get('categoria'),
             formulario_get('tipo'),
             formulario_get('descrição'),
@@ -82,17 +82,17 @@ class CadastroClientes(Configs, Funcoes):
         self.inicia_formulario()
         self.inicia_lista_produtos()
 
-        self.novo_produto.mainloop()
+        self.novo_servico.mainloop()
 
     def inicia_painel(self, user):
-        novo_produto = Tk()
+        novo_servico = Tk()
 
-        novo_produto.title(f'Cadastro de produtos --> {user.capitalize()}')
-        novo_produto.geometry(f'{self.largura_tela(novo_produto)}x{self.altura_tela(novo_produto)}+200+100')
-        novo_produto.resizable(False, False)
-        novo_produto.configure(**self.root_params)
+        novo_servico.title(f'Cadastro de seviços --> {user.capitalize()}')
+        novo_servico.geometry(f'{self.largura_tela(novo_servico)}x{self.altura_tela(novo_servico)}+200+100')
+        novo_servico.resizable(False, False)
+        novo_servico.configure(**self.root_params)
 
-        self.novo_produto = novo_produto
+        self.novo_servico = novo_servico
 
     @staticmethod
     def largura_tela(novo_cliente):
@@ -103,45 +103,22 @@ class CadastroClientes(Configs, Funcoes):
         return int(novo_cliente.winfo_screenheight() / 1.4)
 
     def inicia_frames(self):
-        notebooks = {
-            'notebook': {
-                'param': {'master': self.novo_produto},
-                'place': {'relx': 0.01, 'rely': 0.01, 'relwidth': 0.98, 'relheight': 0.48},
-            }
-        }
-        Construtor.notebook(notebooks)
-
-        notebook = self.novo_produto.children['notebook']
-
         frames = {
             'frame_formulario': {
-                'param': {'master': notebook, **self.frames_params},
-                'place': {'relx': 0.01, 'rely': 0.01, 'relwidth': 0.98, 'relheight': 0.48}
-            },
-            'frame_configs': {
-                'param': {'master': notebook, **self.frames_params},
-                'place': {'relx': 0.01, 'rely': 0.01, 'relwidth': 0.98, 'relheight': 0.48}
+                'param': dict(master = self.novo_servico, **self.frames_params),
+                'place': dict(relx = 0.01, rely = 0.01, relwidth = 0.98, relheight = 0.48)
             },
             'frame_lista_produtos': {
-                'param': dict(master = self.novo_produto, **self.frames_params),
+                'param': dict(master = self.novo_servico, **self.frames_params),
                 'place': dict(relx = 0.01, rely = 0.51, relwidth = 0.98, relheight = 0.48)
             }
         }
         # Cria frame dos formulários
         Construtor.frame(frames)
 
-        abas = {
-            'notebook': notebook,
-            'abas': {
-                'Cadastro': {'child': notebook.children['frame_formulario']},
-                'Controle de estoque': {'child': notebook.children['frame_configs']},
-            }
-        }
-        Construtor.add_abas(abas)
-
         # Seta marcador para as variáveis, para referenciarmos nos widgets
-        self.frame_formulario = notebook.children['frame_formulario']
-        self.frame_lista_produtos = self.novo_produto.children['frame_lista_produtos']
+        self.frame_formulario = self.novo_servico.children['frame_formulario']
+        self.frame_lista_produtos = self.novo_servico.children['frame_lista_produtos']
 
     def inicia_formulario(self):
         # Parâmetros para posicionamento geral
@@ -167,12 +144,12 @@ class CadastroClientes(Configs, Funcoes):
                 'param': {'master': self.frame_formulario, **self.labels_params, 'text': 'ID'},
                 'place': {'relx': coluna1, 'rely': linha1}
             },
-            'nome_label': {
+            'nome_servico_label': {
                 'param': {'master': self.frame_formulario, **self.labels_params, 'text': 'Nome'},
                 'place': {'relx': coluna2, 'rely': linha1},
             },
-            'fabricante_label': {
-                'param': {'master': self.frame_formulario, **self.labels_params, 'text': 'Fabricante'},
+            'data_criacao_label': {
+                'param': {'master': self.frame_formulario, **self.labels_params, 'text': 'Data de criação'},
                 'place': {'relx': coluna5, 'rely': linha1},
             },
             'quantidade_label': {
@@ -183,26 +160,18 @@ class CadastroClientes(Configs, Funcoes):
                 'param': {'master': self.frame_formulario, **self.labels_params, 'text': 'Custo'},
                 'place': {'relx': coluna2, 'rely': linha2},
             },
-            'cod_de_barras_label': {
-                'param': {'master': self.frame_formulario, **self.labels_params, 'text': 'Cód. de barras'},
+            'margem_de_lucro_label': {
+                'param': {'master': self.frame_formulario, **self.labels_params, 'text': 'Margem lucro'},
                 'place': {'relx': coluna3, 'rely': linha2},
-            },
-            'validade_label': {
-                'param': {'master': self.frame_formulario, **self.labels_params, 'text': 'Validade'},
-                'place': {'relx': coluna4, 'rely': linha2},
             },
             'categoria_label': {
                 'param': {'master': self.frame_formulario, **self.labels_params, 'text': 'Categoria'},
-                'place': {'relx': coluna5, 'rely': linha2},
+                'place': {'relx': coluna4, 'rely': linha2},
             },
             'tipo_label': {
                 'param': {'master': self.frame_formulario, **self.labels_params, 'text': 'Tipo'},
-                'place': {'relx': coluna6, 'rely': linha2},
+                'place': {'relx': coluna5, 'rely': linha2},
             },
-            # 'Impostos_label': {
-            #                 'param': {'master': self.frame_formulario, **self.labels_params, 'text': 'Impostos'},
-            #                 'place': {'relx': coluna3, 'rely': linha3},
-            # },
             'descrição_label': {
                 'param': {'master': self.frame_formulario, **self.labels_params, 'text': 'Descrição'},
                 'place': {'relx': coluna1, 'rely': linha3},
@@ -216,18 +185,10 @@ class CadastroClientes(Configs, Funcoes):
                 'param': {'master': self.frame_formulario, **self.entrys_params},
                 'place': {'relx': coluna1, 'rely': linha1 + defasagem_infos, 'relwidth': defasagem_infos}
             },
-            'nome': {
+            'nome_servico': {
                 'param': {'master': self.frame_formulario, **self.entrys_params},
                 'place': {
-                    'relx': coluna2, 'rely': linha1 + defasagem_infos,
-                    'relwidth': coluna4 - coluna2 + defasagem_infos
-                }
-            },
-            'fabricante': {
-                'param': {'master': self.frame_formulario, **self.entrys_params},
-                'place': {
-                    'relx': coluna5, 'rely': linha1 + defasagem_infos,
-                    'relwidth': coluna6 - coluna5 + defasagem_infos
+                    'relx': coluna2, 'rely': linha1 + defasagem_infos, 'relwidth': coluna4 - coluna2 + defasagem_infos
                 }
             },
             'quantidade': {
@@ -238,17 +199,10 @@ class CadastroClientes(Configs, Funcoes):
                 'param': {'master': self.frame_formulario, **self.entrys_params},
                 'place': {'relx': coluna2, 'rely': linha2 + defasagem_infos, 'relwidth': defasagem_infos}
             },
-            'cod_barras': {
+            'margem_de_lucro': {
                 'param': {'master': self.frame_formulario, **self.entrys_params},
-                'place': {
-                    'relx': coluna3, 'rely': linha2 + defasagem_infos, 'relwidth': defasagem_infos + 0.02
-                }
+                'place': {'relx': coluna3, 'rely': linha2 + defasagem_infos, 'relwidth': defasagem_infos}
             },
-            # 'Impostos': {
-            #     'param': 'master': self.frame_formulario, **self.entrys_params,
-            #     'place': {'relx': coluna3, 'rely': linha3}
-            # }
-            # 
         }
         # Cria entrys
         Construtor.entry(entrys)
@@ -269,21 +223,22 @@ class CadastroClientes(Configs, Funcoes):
         combo_box = {
             'categoria': {
                 'param': {'master': self.frame_formulario, 'values': self.categorias, 'state': 'readonly'},
-                'place': {'relx': coluna5, 'rely': linha2 + defasagem_infos, 'relwidth': defasagem_infos}
+                'place': {'relx': coluna4, 'rely': linha2 + defasagem_infos, 'relwidth': defasagem_infos}
             },
             'tipo': {
                 'param': {'master': self.frame_formulario, 'values': self.tipos, 'state': 'readonly'},
-                'place': {'relx': coluna6, 'rely': linha2 + defasagem_infos, 'relwidth': defasagem_infos},
+                'place': {'relx': coluna5, 'rely': linha2 + defasagem_infos, 'relwidth': defasagem_infos},
             },
         }
         Construtor.combo_box(combo_box)
 
         # Cria campo calendário
-        self.calendario1 = DateEntry(self.frame_formulario, **self.entrys_params, locale = "pt_br")
-        self.calendario1.place(relx = coluna4, rely = linha2 + defasagem_infos, relwidth = defasagem_infos + 0.01)
+        self.data_criacao = DateEntry(self.frame_formulario, **self.entrys_params, locale = "pt_br")
+        self.data_criacao.place(relx = coluna5, rely = linha1 + defasagem_infos, relwidth = defasagem_infos + 0.05)
 
-        self.insert_id(value = '0')
-        self.frame_formulario.children.get('nome').focus_set()
+        frame_form_child_get = self.frame_formulario.children.get
+        self.insert_id(value = 0)
+        frame_form_child_get('nome_servico').focus_set()
 
         # Reorganizando a função TAB
         for campo in self.campos_criados:
@@ -310,7 +265,7 @@ class CadastroClientes(Configs, Funcoes):
         Construtor.button(botoes)
 
     def inicia_lista_produtos(self):
-        tree_produtos = {
+        tree_servicos = {
             'param': {
                 'master': self.frame_lista_produtos,
                 'name': 'tree_produtos',
@@ -356,7 +311,7 @@ class CadastroClientes(Configs, Funcoes):
                 },
             }
         }
-        Construtor.tree_view(tree_produtos)
+        Construtor.tree_view(tree_servicos)
 
         tabela = self.frame_lista_produtos.children['tree_produtos']
         tabela.column('#0', width = False)
