@@ -1,4 +1,4 @@
-from threading import Thread
+from threading import Thread, ThreadError
 from tkinter import Tk, Menu
 from tkinter.messagebox import showinfo
 from os import getpid
@@ -11,47 +11,67 @@ from ModulosFront.tela_login import Logon
 
 
 class Modulos:
+    modulos_iniciados = dict()
+
     def cadastro_clientes(self):
-        try:
-            if self.cad_cli.is_alive():
-                raise showinfo('Já iniciado', 'Módulo já em execução')
-        except AttributeError:
-            path = abspath('./ModulosFront/cadastro_clientes.py')
-            self.cad_cli = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
-            self.cad_cli.start()
+        path = abspath('./ModulosFront/cadastro_clientes.py')
+        nome_servico = 'cad_cli'
+        if not self.modulos_iniciados.get(nome_servico, False):
+            self.abrir_modulo(path, nome_servico)
+        elif not self.modulos_iniciados[nome_servico].is_alive():
+            self.abrir_modulo(path, nome_servico)
+        else:
+            showinfo('Já iniciado', 'Módulo já em execução')
 
     def cadastro_produtos(self):
-        try:
-            if self.cad_prod.is_alive():
-                raise showinfo('Já iniciado', 'Módulo já em execução')
-        except AttributeError:
-            path = abspath('./ModulosFront/cadastro_produtos.py')
-            self.cad_prod = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
-            self.cad_prod.start()
+        path = abspath('./ModulosFront/cadastro_produtos.py')
+        nome_servico = 'cad_prod'
+        if not self.modulos_iniciados.get(nome_servico, False):
+            self.abrir_modulo(path, nome_servico)
+        elif not self.modulos_iniciados[nome_servico].is_alive():
+            self.abrir_modulo(path, nome_servico)
+        else:
+            showinfo('Já iniciado', 'Módulo já em execução')
 
     def cadastro_servicos(self):
-        try:
-            if self.cad_serv.is_alive():
-                raise showinfo('Já iniciado', 'Módulo já em execução')
-        except AttributeError:
-            path = abspath('./ModulosFront/cadastro_servicos.py')
-            self.cad_serv = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
-            self.cad_serv.start()
+        path = abspath('./ModulosFront/cadastro_servicos.py')
+        nome_servico = 'cad_serv'
+        if not self.modulos_iniciados.get(nome_servico, False):
+            self.abrir_modulo(path, nome_servico)
+        elif not self.modulos_iniciados[nome_servico].is_alive():
+            self.abrir_modulo(path, nome_servico)
+        else:
+            showinfo('Já iniciado', 'Módulo já em execução')
 
     def controle_estoque(self):
-        try:
-            if self.cont_estq.is_alive():
-                raise showinfo('Já iniciado', 'Módulo já em execução')
-        except AttributeError:
-            path = abspath('./ModulosFront/controle_estoque.py')
-            self.cont_estq = Thread(target = lambda: subprocess.call(self.abrir_modulo(path)), daemon = False)
-            self.cont_estq.start()
+        path = abspath('./ModulosFront/controle_estoque.py')
+        nome_servico = 'cont_estq'
+        if not self.modulos_iniciados.get(nome_servico, False):
+            self.abrir_modulo(path, nome_servico)
+        elif not self.modulos_iniciados[nome_servico].is_alive():
+            self.abrir_modulo(path, nome_servico)
+        else:
+            showinfo('Já iniciado', 'Módulo já em execução')
 
     def vendas(self):
-        pass
+        path = abspath('./ModulosFront/vendas.py')
+        nome_servico = 'vendas'
+        if not self.modulos_iniciados.get(nome_servico, False):
+            self.abrir_modulo(path, nome_servico)
+        elif not self.modulos_iniciados[nome_servico].is_alive():
+            self.abrir_modulo(path, nome_servico)
+        else:
+            showinfo('Já iniciado', 'Módulo já em execução')
 
     def ranking_clientes(self):
-        pass
+        path = abspath('./ModulosFront/ranking_clientes.py')
+        nome_servico = 'rnk_cli'
+        if not self.modulos_iniciados.get(nome_servico, False):
+            self.abrir_modulo(path, nome_servico)
+        elif not self.modulos_iniciados[nome_servico].is_alive():
+            self.abrir_modulo(path, nome_servico)
+        else:
+            showinfo('Já iniciado', 'Módulo já em execução')
 
     def paretto(self):
         pass
@@ -62,17 +82,22 @@ class Modulos:
     def compras_periodo(self):
         pass
 
-    def abrir_modulo(self, path):
-        return f'py {path} --user {self.user} --logado {self.logado}'
+    def abrir_modulo(self, path, nome_processo):
+        caminho = f'py {path} --user {self.user} --logado {self.logado}'
+        modulo = Thread(target = lambda: subprocess.call(caminho), daemon = False)
+        modulo.start()
+
+        self.modulos_iniciados[nome_processo] = modulo
 
 
 class Interface(Modulos, Configs, Logon):
     logado = False
     menus_criados = list()
     user = None
+    configs_path = abspath('./Configs/configs.json')
 
     def __init__(self):
-        self.inicia_configs()
+        Configs.__init__(self, self.configs_path)
         self.inicia_root()
         self.inicia_menu()
         self.root.after(100, self.login, *())
@@ -87,7 +112,7 @@ class Interface(Modulos, Configs, Logon):
         root.geometry(f'{largura_tela}x{altura_tela}+50+30')
         root.configure(**self.root_params)
 
-        root.bind('<Destroy>', lambda e: self.fechar_programas())
+        root.protocol(root.wm_protocol()[0], self.fechar_programas)
 
         self.root = root
 
@@ -126,7 +151,7 @@ class Interface(Modulos, Configs, Logon):
     @staticmethod
     def fechar_programas():
         pid = getpid()
-        subprocess.call(f'taskkill /PID {pid} /T', shell = True)
+        subprocess.call(f'taskkill /F /PID {pid} /T', shell = True)
 
 
 if __name__ == '__main__':

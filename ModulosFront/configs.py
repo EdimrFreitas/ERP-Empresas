@@ -1,11 +1,12 @@
-from os.path import abspath
 from json import dump, load
 
 
 class Configs:
-    configs_path = abspath('./Configs/configs.json')
+    def __init__(self, path):
+        self.configs_path = path
+        self.__inicia_configs()
 
-    def inicia_configs(self):
+    def __inicia_configs(self):
         with open(self.configs_path, 'r') as configs_json:
             self.configs: dict = load(configs_json)
             configs_json.close()

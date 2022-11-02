@@ -2,12 +2,15 @@ from argparse import ArgumentParser
 from tkinter import Tk, Label, Entry, Button
 from tkinter.ttk import Treeview
 from tkcalendar import DateEntry
+from os.path import abspath
 
-from ModulosFront.configs import Configs
-from ModulosFront.construtor import Construtor
+from configs import Configs
+from construtor import Construtor
 
 
 class CadastroClientes(Configs):
+    configs_path = abspath('./Configs/configs.json')
+
     def __init__(self):
         parser = ArgumentParser(exit_on_error = True)
         parser.add_argument('--user', default = None, required = True)
@@ -20,10 +23,10 @@ class CadastroClientes(Configs):
         if not user or not logado:
             exit('Sem usuário logado')
         else:
-            self.inicia_configs()
             self.painel_cadastro_clientes(user)
 
     def painel_cadastro_clientes(self, user):
+        Configs.__init__(self, self.configs_path)
         self.inicia_painel(user)
 
         self.inicia_frames()

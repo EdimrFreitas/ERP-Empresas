@@ -1,9 +1,10 @@
 ﻿from argparse import ArgumentParser
 from tkinter import Tk
 from tkcalendar import DateEntry
+from os.path import abspath
 
-from ModulosFront.configs import Configs
-from ModulosFront.construtor import Construtor
+from configs import Configs
+from construtor import Construtor
 
 
 class Funcoes:
@@ -63,6 +64,9 @@ class Funcoes:
 
 
 class CadastroClientes(Configs, Funcoes):
+    configs_path = abspath('./Configs/configs.json')
+
+
     def __init__(self):
         parser = ArgumentParser(exit_on_error = True)
         parser.add_argument('--user', default = None, required = True)
@@ -70,7 +74,7 @@ class CadastroClientes(Configs, Funcoes):
         args = parser.parse_args()
 
         if self.verifica_login(args.user, args.logado):
-            self.inicia_configs()
+            Configs.__init__(self, self.configs_path)
             self.painel_cadastro_produtos(args.user)
         else:
             exit('Sem usuário logado')
