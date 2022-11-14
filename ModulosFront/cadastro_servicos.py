@@ -5,13 +5,14 @@ from os.path import abspath
 
 from configs import Configs
 from construtor import Construtor
+from inicializador import Argumentos
 
 
 class Funcoes:
 
     @staticmethod
-    def verifica_login(user=None, logado=False):
-        if not user or not logado:
+    def verifica_login(user=None, senha=None, logado=False):
+        if not user or not logado or not senha:
             return False
         else:
             return True
@@ -67,12 +68,12 @@ class CadastroClientes(Configs, Funcoes):
     configs_path = abspath('./Configs/configs.json')
 
     def __init__(self):
-        parser = ArgumentParser(exit_on_error = True)
-        parser.add_argument('--user', default = None, required = True)
-        parser.add_argument('--logado', default = None, required = True)
-        args = parser.parse_args()
+        args = Argumentos.argumentos()
+        usuario = args.user
+        senha = args.senha
+        logado = args.logado
 
-        if self.verifica_login(args.user, args.logado):
+        if self.verifica_login(usuario, senha, logado):
             Configs.__init__(self, self.configs_path)
             self.painel_cadastro_produtos(args.user)
         else:

@@ -845,22 +845,39 @@ class Construtor:
     @classmethod
     def menu(cls, kw=None):
         """ Estrutura:
-            radio_buttons = {
-                nome_do_radio_button: {
-                    'param': {
-                        master: Misc | None = ...,
-                        class_: str = ...,
-                        cursor: Any = ...,
-                        name: str = ...,
-                        orient: Literal["horizontal", "vertical"] = ...,
-                        style: str = ...,
-                        takefocus: Any = ...
-                    },
-                    pack, place, grid: {verificar sobre regras para cada um nas infos do Tkinter}
+            menu = {
+                menu_prin = {
+                    master: Misc | None = ...,
+                    activeborderwidth: str | float = ...,
+                    activeforeground: str = ...,
+                    background ou bg: str = ...,
+                    border ou bd: str | float = ...,
+                    borderwidth: str | float = ...,
+                    cursor: str | tuple[str] | tuple[str, str] | tuple[str, str, str] | tuple[str, str, str, str] = ...,
+                    disabledforeground: str = ...,
+                    font: Any = ...,
+                    foreground ou fg: str = ...,
+                    name: str = ...,
+                    postcommand: () -> Any | str = ...,
+                    relief: Literal["raised", "sunken", "flat", "ridge", "solid", "groove"] = ...,
+                    selectcolor: str = ...,
+                    takefocus: int | Literal[""] | (str) -> bool | None = ...,
+                    tearoff: int = ...,
+                    tearoffcommand: (str, str) -> Any | str = ...,
+                    title: str = ...,
+                    type: Literal["menubar", "tearoff", "normal"] = ...
                 },
-                ...
+                menus_internos = {
+                    nome_menu1 = {
+                        info
+                    },
+                    ...
+                },
             }
         """
+
+        menu_prin = Menu(**kw['menu_prin'])
+
         for menu in kw:
             param = kw[menu]['param']
 

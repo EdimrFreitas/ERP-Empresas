@@ -1,12 +1,10 @@
-from threading import Thread, ThreadError
+from threading import Thread
 from tkinter import Tk, Menu
 from tkinter.messagebox import showinfo
-from os import getpid
+from os import getpid, system
 from os.path import abspath
-import subprocess
 
 from ModulosFront.configs import Configs
-from ModulosFront.construtor import Construtor
 from ModulosFront.tela_login import Logon
 
 
@@ -83,24 +81,24 @@ class Modulos:
         pass
 
     def abrir_modulo(self, path, nome_processo):
-        caminho = f'py {path} --user {self.user} --logado {self.logado}'
-        modulo = Thread(target = lambda: subprocess.call(caminho), daemon = False)
+        caminho = f'py {path} --user {self.user} --senha {self.password} --logado {self.logado}'
+        modulo = Thread(target = lambda: system(caminho), daemon = False)
         modulo.start()
 
         self.modulos_iniciados[nome_processo] = modulo
 
 
 class Interface(Modulos, Configs, Logon):
-    logado = False
-    menus_criados = list()
     user = None
+    password = None
+    perfil = None
+    logado = False
     configs_path = abspath('./Configs/configs.json')
 
     def __init__(self):
         Configs.__init__(self, self.configs_path)
         self.inicia_root()
-        self.inicia_menu()
-        self.root.after(100, self.login, *())
+        self.root.after(100, lambda: Logon.__init__(self))
         self.root.mainloop()
 
     # Inicia a tela com nome da empresa
@@ -118,8 +116,26 @@ class Interface(Modulos, Configs, Logon):
 
     def inicia_menu(self):
         menu_bar = Menu(master = self.root)
+        self.root.config(menu = menu_bar)
+        menus = self.consulta_menu_por_perfil
 
-        menus = {
+        for menu_superior in menus:
+            novo_menu = Menu(master = menu_bar, tearoff = 0, name = menu_superior.lower())
+            menu_bar.add_cascade(label = menu_superior, menu = novo_menu)
+            novo_menu.winfo_name()
+
+            for menu_inferior, comando in menus[menu_superior]:
+                novo_menu.add_command(label = menu_inferior, command = comando)
+        self.menu_bar = menu_bar
+
+    @staticmethod
+    def fechar_programas():
+        pid = getpid()
+        system(command = f'taskkill /F /PID {pid} /T')
+
+    @property
+    def consulta_menu_por_perfil(self):
+        return {
             'Cadastros': (
                 ('Cadastro de clientes', self.cadastro_clientes),
                 ('Cadastro de produtos', self.cadastro_produtos),
@@ -136,22 +152,6 @@ class Interface(Modulos, Configs, Logon):
                 ('Paretto', self.paretto),
             )
         }
-
-        for menu_superior in menus:
-            novo_menu = Menu(master = menu_bar, tearoff = 0)
-            menu_bar.add_cascade(label = menu_superior, menu = novo_menu, state = 'disabled')
-            self.menus_criados.append(menu_superior)
-
-            for menu_inferior, comando in menus[menu_superior]:
-                novo_menu.add_command(label = menu_inferior, command = comando)
-
-        self.root.config(menu = menu_bar)
-        self.menu_bar = menu_bar
-
-    @staticmethod
-    def fechar_programas():
-        pid = getpid()
-        subprocess.call(f'taskkill /F /PID {pid} /T', shell = True)
 
 
 if __name__ == '__main__':

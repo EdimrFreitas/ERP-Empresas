@@ -4,7 +4,7 @@
   "fonte": "Arial",
   "tamanho_letras": "12",
   "fonte_opcoes": "bold",
-  "bg": "gray95",
+  "cor_da_borda": "gray95",
   "ip_servidor": "172.0.0.1",
   "ultimo_user": "Edimar"
 }

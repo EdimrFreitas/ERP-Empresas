@@ -1,4 +1,3 @@
-from argparse import ArgumentParser
 from tkinter import Tk, Label, Entry, Button
 from tkinter.ttk import Treeview
 from tkcalendar import DateEntry
@@ -6,16 +5,49 @@ from os.path import abspath
 
 from configs import Configs
 from construtor import Construtor
+from inicializador import Argumentos
 
 
-class CadastroClientes(Configs):
+class Funcoes:
+    @staticmethod
+    def largura_tela(novo_cliente):
+        return int(novo_cliente.winfo_screenwidth() / 1.4)
+
+    @staticmethod
+    def altura_tela(novo_cliente):
+        return int(novo_cliente.winfo_screenheight() / 1.4)
+
+    def salvar(self, entrys_criadas):
+        infos = [entry.get() for entry in entrys_criadas]
+        nome_completo = infos[1]
+        numero = infos[6]
+        cidade = infos[4]
+        nivel = infos[9]
+        self.tabela.insert(parent = '', index = 'end', values = [nome_completo, numero, cidade, nivel])
+
+    @staticmethod
+    def limpar(entrys_criadas):
+        for entry in entrys_criadas:
+            try:
+                entry.delete(0, 'end')
+            except AttributeError:
+                pass
+
+    def buscar(self, entrys_criadas):
+        pass
+
+    def insert_id(self, row=0, value=None):
+        frame_form_child_id = self.frame_formulario.children['id_entry']
+        frame_form_child_id['state'] = 'normal'
+        frame_form_child_id.insert(row, str(value))
+        frame_form_child_id['state'] = 'readonly'
+
+
+class CadastroClientes(Configs, Funcoes):
     configs_path = abspath('./Configs/configs.json')
 
     def __init__(self):
-        parser = ArgumentParser(exit_on_error = True)
-        parser.add_argument('--user', default = None, required = True)
-        parser.add_argument('--logado', default = None, required = True)
-        args = parser.parse_args()
+        args = Argumentos.argumentos()
 
         self.verifica_login(args.user, args.logado)
 
@@ -44,14 +76,6 @@ class CadastroClientes(Configs):
         novo_cliente.configure(**self.root_params)
 
         self.novo_cliente = novo_cliente
-
-    @staticmethod
-    def largura_tela(novo_cliente):
-        return int(novo_cliente.winfo_screenwidth() / 1.4)
-
-    @staticmethod
-    def altura_tela(novo_cliente):
-        return int(novo_cliente.winfo_screenheight() / 1.4)
 
     def inicia_frames(self):
         frames = {
@@ -209,15 +233,19 @@ class CadastroClientes(Configs):
 
         # Dropdown do nível de permissão
         niveis_permissao = ['Completa', 'Cliente', 'Gestor', 'Vendedor', 'Compras']
+        niveis_permissao.sort()
         combos = {
-            'option': {
+            'nivel_permissao': {
                 'param': {'master': self.frame_formulario, 'values': niveis_permissao, 'state': 'readonly'},
                 'place': dict(relx = coluna2, rely = linha4 + multiplo_linha_entrys - 0.02, relwidth = 0.15)
             }
         }
         Construtor.combo_box(combos)
-        self.frame_formulario.children['option'].current(1)
-        entrys_criadas.append(self.frame_formulario.children['option'])
+
+        child_permissao = child_get('nivel_permissao')
+        child_permissao.current(0)
+        entrys_criadas.append(child_permissao)
+        child_permissao.bind('<<ComboboxSelected>>', lambda e: self.verifica_tipo_cadastro())
 
         # Criação dos botões
         button_width = 0.07
@@ -241,24 +269,18 @@ class CadastroClientes(Configs):
         for botao in botoes:
             Button(**botoes[botao]['param'], name = botao.lower()).place(**botoes[botao]['place'])
 
-    def salvar(self, entrys_criadas):
-        infos = [entry.get() for entry in entrys_criadas]
-        nome_completo = infos[1]
-        numero = infos[6]
-        cidade = infos[4]
-        nivel = infos[9]
-        self.tabela.insert(parent = '', index = 'end', values = [nome_completo, numero, cidade, nivel])
+    def verifica_tipo_cadastro(self):
+        child_get = self.frame_formulario.children.get
+        permissao = child_get('nivel_permissao').get()
+        if permissao != 'Cliente' and not child_get('senha', False):
+            campo_senha = {
+                'senha': {
+                    'param': {'master': self.frame_formulario, **self.entrys_params},
+                    'place': {'relx': 0.55, 'rely': 0.755}
+                }
+            }
+            Construtor.entry(campo_senha)
 
-    @staticmethod
-    def limpar(entrys_criadas):
-        for entry in entrys_criadas:
-            try:
-                entry.delete(0, 'end')
-            except AttributeError:
-                pass
-
-    def buscar(self, entrys_criadas):
-        pass
 
     def inicia_lista_clientes(self):
         colunas = {
@@ -291,12 +313,6 @@ class CadastroClientes(Configs):
         for coluna in colunas:
             tabela.heading(column = coluna, text = coluna)
             tabela.column(column = coluna, **colunas[coluna])
-
-    def insert_id(self, row=0, value=None):
-        frame_form_child_id = self.frame_formulario.children['id_entry']
-        frame_form_child_id['state'] = 'normal'
-        frame_form_child_id.insert(row, str(value))
-        frame_form_child_id['state'] = 'readonly'
 
 
 if __name__ == '__main__':

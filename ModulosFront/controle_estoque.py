@@ -5,6 +5,7 @@ from os.path import abspath
 
 from configs import Configs
 from construtor import Construtor
+from inicializador import Argumentos
 
 
 class Funcoes:
@@ -67,10 +68,7 @@ class CadastroClientes(Configs, Funcoes):
     configs_path = abspath('./Configs/configs.json')
 
     def __init__(self):
-        parser = ArgumentParser(exit_on_error = True)
-        parser.add_argument('--user', default = None, required = True)
-        parser.add_argument('--logado', default = None, required = True)
-        args = parser.parse_args()
+        args = Argumentos.argumentos()
 
         if self.verifica_login(args.user, args.logado):
             Configs.__init__(self, self.configs_path)
