@@ -48,6 +48,7 @@ class CadastroClientes(Configs, Funcoes):
 
     def __init__(self):
         args = Argumentos.argumentos()
+        Configs.__init__(self, self.configs_path)
 
         self.verifica_login(args.user, args.logado)
 
@@ -58,7 +59,6 @@ class CadastroClientes(Configs, Funcoes):
             self.painel_cadastro_clientes(user)
 
     def painel_cadastro_clientes(self, user):
-        Configs.__init__(self, self.configs_path)
         self.inicia_painel(user)
 
         self.inicia_frames()
@@ -280,7 +280,6 @@ class CadastroClientes(Configs, Funcoes):
                 }
             }
             Construtor.entry(campo_senha)
-
 
     def inicia_lista_clientes(self):
         colunas = {

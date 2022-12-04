@@ -1,11 +1,11 @@
-﻿from argparse import ArgumentParser
-from tkinter import Tk
+﻿from tkinter import Tk
 from tkcalendar import DateEntry
 from os.path import abspath
 
 from configs import Configs
 from construtor import Construtor
 from inicializador import Argumentos
+
 
 class Funcoes:
     @staticmethod

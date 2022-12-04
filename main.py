@@ -81,7 +81,11 @@ class Modulos:
         pass
 
     def abrir_modulo(self, path, nome_processo):
-        caminho = f'py {path} --user {self.user} --senha {self.password} --logado {self.logado}'
+        programa = 'venv\Scripts\python.exe'
+        user = self.user
+        senha = self.password
+        logado = self.logado
+        caminho = f'{programa} {path} --user {user} --senha {senha} --logado {logado}'
         modulo = Thread(target = lambda: system(caminho), daemon = False)
         modulo.start()
 
