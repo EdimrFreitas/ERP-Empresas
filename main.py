@@ -14,62 +14,37 @@ class Modulos:
     def cadastro_clientes(self):
         path = abspath('./ModulosFront/cadastro_clientes.py')
         nome_servico = 'cad_cli'
-        if not self.modulos_iniciados.get(nome_servico, False):
-            self.abrir_modulo(path, nome_servico)
-        elif not self.modulos_iniciados[nome_servico].is_alive():
-            self.abrir_modulo(path, nome_servico)
-        else:
-            showinfo('Já iniciado', 'Módulo já em execução')
+        self.verifica_inicio(path, nome_servico)
 
     def cadastro_produtos(self):
         path = abspath('./ModulosFront/cadastro_produtos.py')
         nome_servico = 'cad_prod'
-        if not self.modulos_iniciados.get(nome_servico, False):
-            self.abrir_modulo(path, nome_servico)
-        elif not self.modulos_iniciados[nome_servico].is_alive():
-            self.abrir_modulo(path, nome_servico)
-        else:
-            showinfo('Já iniciado', 'Módulo já em execução')
+        self.verifica_inicio(path, nome_servico)
 
     def cadastro_servicos(self):
         path = abspath('./ModulosFront/cadastro_servicos.py')
         nome_servico = 'cad_serv'
-        if not self.modulos_iniciados.get(nome_servico, False):
-            self.abrir_modulo(path, nome_servico)
-        elif not self.modulos_iniciados[nome_servico].is_alive():
-            self.abrir_modulo(path, nome_servico)
-        else:
-            showinfo('Já iniciado', 'Módulo já em execução')
+        self.verifica_inicio(path, nome_servico)
+
+    def cadastro_usuarios(self):
+        path = abspath('./ModulosFront/cadastro_usuarios.py')
+        nome_servico = 'cad_user'
+        self.verifica_inicio(path, nome_servico)
 
     def controle_estoque(self):
         path = abspath('./ModulosFront/controle_estoque.py')
         nome_servico = 'cont_estq'
-        if not self.modulos_iniciados.get(nome_servico, False):
-            self.abrir_modulo(path, nome_servico)
-        elif not self.modulos_iniciados[nome_servico].is_alive():
-            self.abrir_modulo(path, nome_servico)
-        else:
-            showinfo('Já iniciado', 'Módulo já em execução')
+        self.verifica_inicio(path, nome_servico)
 
     def vendas(self):
         path = abspath('./ModulosFront/vendas.py')
         nome_servico = 'vendas'
-        if not self.modulos_iniciados.get(nome_servico, False):
-            self.abrir_modulo(path, nome_servico)
-        elif not self.modulos_iniciados[nome_servico].is_alive():
-            self.abrir_modulo(path, nome_servico)
-        else:
-            showinfo('Já iniciado', 'Módulo já em execução')
+        self.verifica_inicio(path, nome_servico)
 
     def ranking_clientes(self):
         path = abspath('./ModulosFront/ranking_clientes.py')
         nome_servico = 'rnk_cli'
-        if not self.modulos_iniciados.get(nome_servico, False):
-            self.abrir_modulo(path, nome_servico)
-        elif not self.modulos_iniciados[nome_servico].is_alive():
-            self.abrir_modulo(path, nome_servico)
-        else:
-            showinfo('Já iniciado', 'Módulo já em execução')
+        self.verifica_inicio(path, nome_servico)
 
     def paretto(self):
         pass
@@ -79,6 +54,15 @@ class Modulos:
 
     def compras_periodo(self):
         pass
+
+    def verifica_inicio(self, path, nome_servico):
+        if not self.modulos_iniciados.get(nome_servico, False):
+            self.abrir_modulo(path, nome_servico)
+        elif not self.modulos_iniciados[nome_servico].is_alive():
+            self.abrir_modulo(path, nome_servico)
+        else:
+            showinfo('Já iniciado', 'Módulo já em execução')
+        
 
     def abrir_modulo(self, path, nome_processo):
         programa = 'venv\Scripts\python.exe'
@@ -130,6 +114,7 @@ class Interface(Modulos, Configs, Logon):
 
             for menu_inferior, comando in menus[menu_superior]:
                 novo_menu.add_command(label = menu_inferior, command = comando)
+
         self.menu_bar = menu_bar
 
     @staticmethod
@@ -139,11 +124,35 @@ class Interface(Modulos, Configs, Logon):
 
     @property
     def consulta_menu_por_perfil(self):
+        modulos = dict(
+            completa = {
+                'Cadastros': (True, True, True, True, True),
+                'Vendas': (True, ),
+                'Relatórios': (True, True, True, True, )
+            },
+            gestor = {
+                'Cadastros': (True, True, True, True, True),
+                'Vendas': (True, ),
+                'Relatórios': (True, True, True, True, )
+            },
+            vendedor = {
+                'Cadastros': (True, True, True, True, True),
+                'Vendas': (True,),
+                'Relatórios': (True, True, True, True,)
+            },
+            compras = {
+                'Cadastros': (True, True, True, True, True),
+                'Vendas': (True, ),
+                'Relatórios': (True, True, True, True, )
+            }
+        )
+
         return {
             'Cadastros': (
                 ('Cadastro de clientes', self.cadastro_clientes),
                 ('Cadastro de produtos', self.cadastro_produtos),
                 ('Cadastro de serviços', self.cadastro_servicos),
+                ('Cadastro de usuarios', self.cadastro_servicos),
                 ('Controle de estoque', self.controle_estoque),
             ),
             'Vendas': (
