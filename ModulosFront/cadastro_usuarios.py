@@ -232,7 +232,7 @@ class CadastroClientes(Configs, Funcoes):
         child_get('nome completo_entry').focus_set()
 
         # Dropdown do nível de permissão
-        niveis_permissao = ['Completa', 'Cliente', 'Gestor', 'Vendedor', 'Compras']
+        niveis_permissao = ['Total', 'Gestor', 'Vendedor', 'Comprador']
         niveis_permissao.sort()
         combos = {
             'nivel_permissao': {

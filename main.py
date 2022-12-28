@@ -56,20 +56,17 @@ class Modulos:
         pass
 
     def verifica_inicio(self, path, nome_servico):
-        if not self.modulos_iniciados.get(nome_servico, False):
-            self.abrir_modulo(path, nome_servico)
-        elif not self.modulos_iniciados[nome_servico].is_alive():
+        if not self.modulos_iniciados.get(nome_servico, False) or not self.modulos_iniciados[nome_servico].is_alive():
             self.abrir_modulo(path, nome_servico)
         else:
             showinfo('Já iniciado', 'Módulo já em execução')
-        
 
     def abrir_modulo(self, path, nome_processo):
-        programa = 'venv\Scripts\python.exe'
-        user = self.user
-        senha = self.password
-        logado = self.logado
-        caminho = f'{programa} {path} --user {user} --senha {senha} --logado {logado}'
+        programa = abspath('venv/Scripts/python.exe')
+        # user = self.user
+        # senha = self.password
+        # logado = self.logado
+        caminho = f'{programa} {path} --user {self.user} --senha {self.password} --logado {1}'
         modulo = Thread(target = lambda: system(caminho), daemon = False)
         modulo.start()
 
@@ -80,6 +77,7 @@ class Interface(Modulos, Configs, Logon):
     user = None
     password = None
     perfil = None
+    permissoes = None
     logado = False
     configs_path = abspath('./Configs/configs.json')
 
@@ -105,6 +103,7 @@ class Interface(Modulos, Configs, Logon):
     def inicia_menu(self):
         menu_bar = Menu(master = self.root)
         self.root.config(menu = menu_bar)
+
         menus = self.consulta_menu_por_perfil
 
         for menu_superior in menus:
@@ -124,35 +123,13 @@ class Interface(Modulos, Configs, Logon):
 
     @property
     def consulta_menu_por_perfil(self):
-        modulos = dict(
-            completa = {
-                'Cadastros': (True, True, True, True, True),
-                'Vendas': (True, ),
-                'Relatórios': (True, True, True, True, )
-            },
-            gestor = {
-                'Cadastros': (True, True, True, True, True),
-                'Vendas': (True, ),
-                'Relatórios': (True, True, True, True, )
-            },
-            vendedor = {
-                'Cadastros': (True, True, True, True, True),
-                'Vendas': (True,),
-                'Relatórios': (True, True, True, True,)
-            },
-            compras = {
-                'Cadastros': (True, True, True, True, True),
-                'Vendas': (True, ),
-                'Relatórios': (True, True, True, True, )
-            }
-        )
-
-        return {
+        menus_liberados = dict()
+        menus_obj = {
             'Cadastros': (
                 ('Cadastro de clientes', self.cadastro_clientes),
                 ('Cadastro de produtos', self.cadastro_produtos),
                 ('Cadastro de serviços', self.cadastro_servicos),
-                ('Cadastro de usuarios', self.cadastro_servicos),
+                ('Cadastro de usuários', self.cadastro_servicos),
                 ('Controle de estoque', self.controle_estoque),
             ),
             'Vendas': (
@@ -165,6 +142,13 @@ class Interface(Modulos, Configs, Logon):
                 ('Paretto', self.paretto),
             )
         }
+        for menu in menus_obj:
+            menus_liberados[menu] = list()
+            for sub_menu, comando in menus_obj[menu]:
+                if self.permissoes.dicio_permissoes[sub_menu]:
+                    menus_liberados[menu].append((sub_menu, comando))
+            # print(menus_liberados)
+        return menus_liberados
 
 
 if __name__ == '__main__':

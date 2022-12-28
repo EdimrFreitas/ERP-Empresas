@@ -5,6 +5,6 @@
   "tamanho_letras": "12",
   "fonte_opcoes": "bold",
   "cor_da_borda": "gray95",
-  "ip_servidor": "172.0.0.1",
+  "ip_servidor": "127.0.0.1",
   "ultimo_user": "Edimar"
 }
